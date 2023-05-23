@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  ::-webkit-scrollbar {
+    @apply w-1 h-0;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-rose-600 rounded-md;
+  }
+
+  html {
+    font-size: 13px;
+  }
+
+  @screen lg {
+    html {
+      font-size: 14px;
+    }
+  }
+
+  @screen xl {
+    html {
+      font-size: 15px;
+    }
+  }
+
+  @screen 2xl {
+    html {
+      font-size: 16px;
+    }
+  }
+}
