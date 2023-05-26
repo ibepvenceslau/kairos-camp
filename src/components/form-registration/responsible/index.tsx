@@ -35,6 +35,7 @@ type ResponsibleData = {
 
 export type ResponsibleHandles = {
   getResponsibleData(): ResponsibleData;
+  validate(): boolean;
   clear(): void;
 };
 
@@ -59,25 +60,13 @@ const ResponsibleComponent: ForwardRefRenderFunction<ResponsibleHandles, Respons
   };
 
   const handleResponsibleNext = () => {
-    try {
-      responsibleSchema.parse({
-        responsibleName,
-        responsibleBirthDate,
-        responsibleEmail,
-        responsiblePhone,
-        responsibleRg,
-        responsibleCpf,
-        degreeOfKinship,
-      });
+    const isValid = validate();
 
-      changeTab('send');
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        for (const issue of err.issues) {
-          toast.error(issue.message);
-        }
-      }
+    if (!isValid) {
+      return;
     }
+
+    changeTab('send');
   };
 
   const getResponsibleData = () => ({
@@ -89,6 +78,30 @@ const ResponsibleComponent: ForwardRefRenderFunction<ResponsibleHandles, Respons
     responsibleCpf,
     degreeOfKinship,
   });
+
+  const validate = () => {
+    try {
+      responsibleSchema.parse({
+        responsibleName,
+        responsibleBirthDate,
+        responsibleEmail,
+        responsiblePhone,
+        responsibleRg,
+        responsibleCpf,
+        degreeOfKinship,
+      });
+
+      return true;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        for (const issue of err.issues) {
+          toast.error(issue.message);
+        }
+      }
+
+      return false;
+    }
+  };
 
   const clear = () => {
     setResponsibleRg('');
@@ -102,6 +115,7 @@ const ResponsibleComponent: ForwardRefRenderFunction<ResponsibleHandles, Respons
 
   useImperativeHandle(ref, () => ({
     getResponsibleData,
+    validate,
     clear,
   }));
 

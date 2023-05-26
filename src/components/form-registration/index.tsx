@@ -22,6 +22,17 @@ export const FormRegistration = () => {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    let isValid = true;
+
+    isValid = !!churchRef.current?.validate() && isValid;
+    isValid = !!addressRef.current?.validate() && isValid;
+    isValid = !!personalRef.current?.validate() && isValid;
+    isValid = !!responsibleRef.current?.validate() && isValid;
+
+    if (!isValid) {
+      return;
+    }
+
     const data = {
       ...churchRef.current?.getChurchData(),
       ...addressRef.current?.getAddressData(),

@@ -38,6 +38,7 @@ type ChurchData = {
 
 export type ChurchHandles = {
   getChurchData(): ChurchData;
+  validate(): boolean;
   clear(): void;
 };
 
@@ -61,24 +62,16 @@ const ChurchComponent: ForwardRefRenderFunction<ChurchHandles, ChurchProps> = (
   const handleChurchNext = () => {
     const personAge = calcPersonAge(personalRef.current?.getPersonalData().birthDate ?? '');
 
-    try {
-      churchSchema.parse({
-        isChurchMember,
-        churchName,
-        churchLeaderName,
-      });
+    const isValid = validate();
 
-      if (personAge < 18) {
-        changeTab('responsible');
-      } else {
-        changeTab('send');
-      }
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        for (const issue of err.issues) {
-          toast.error(issue.message);
-        }
-      }
+    if (!isValid) {
+      return;
+    }
+
+    if (personAge < 18) {
+      changeTab('responsible');
+    } else {
+      changeTab('send');
     }
   };
 
@@ -88,6 +81,26 @@ const ChurchComponent: ForwardRefRenderFunction<ChurchHandles, ChurchProps> = (
     churchLeaderName,
   });
 
+  const validate = () => {
+    try {
+      churchSchema.parse({
+        isChurchMember,
+        churchName,
+        churchLeaderName,
+      });
+
+      return true;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        for (const issue of err.issues) {
+          toast.error(issue.message);
+        }
+      }
+
+      return false;
+    }
+  };
+
   const clear = () => {
     setChurchName('');
     setIsChurchMember(true);
@@ -96,6 +109,7 @@ const ChurchComponent: ForwardRefRenderFunction<ChurchHandles, ChurchProps> = (
 
   useImperativeHandle(ref, () => ({
     getChurchData,
+    validate,
     clear,
   }));
 

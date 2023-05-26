@@ -30,6 +30,7 @@ type AddressData = {
 
 export type AddressHandles = {
   getAddressData(): AddressData;
+  validate(): boolean;
   clear(): void;
 };
 
@@ -53,24 +54,13 @@ const AddressComponent: ForwardRefRenderFunction<AddressHandles, AddressProps> =
   };
 
   const handleAddressNext = () => {
-    try {
-      addressSchema.parse({
-        streetName,
-        streetNumber,
-        neighborhood,
-        complement,
-        city,
-        state,
-      });
+    const isValid = validate();
 
-      changeTab('church');
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        for (const issue of err.issues) {
-          toast.error(issue.message);
-        }
-      }
+    if (!isValid) {
+      return;
     }
+
+    changeTab('church');
   };
 
   const getAddressData = () => ({
@@ -81,6 +71,29 @@ const AddressComponent: ForwardRefRenderFunction<AddressHandles, AddressProps> =
     city,
     state,
   });
+
+  const validate = () => {
+    try {
+      addressSchema.parse({
+        streetName,
+        streetNumber,
+        neighborhood,
+        complement,
+        city,
+        state,
+      });
+
+      return true;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        for (const issue of err.issues) {
+          toast.error(issue.message);
+        }
+      }
+
+      return false;
+    }
+  };
 
   const clear = () => {
     setCity('');
@@ -93,6 +106,7 @@ const AddressComponent: ForwardRefRenderFunction<AddressHandles, AddressProps> =
 
   useImperativeHandle(ref, () => ({
     getAddressData,
+    validate,
     clear,
   }));
 

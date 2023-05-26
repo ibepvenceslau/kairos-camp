@@ -34,6 +34,7 @@ type PersonalData = {
 
 export type PersonalHandles = {
   getPersonalData(): PersonalData;
+  validate(): boolean;
   clear(): void;
 };
 
@@ -53,24 +54,13 @@ const PersonalComponent: ForwardRefRenderFunction<PersonalHandles, PersonalProps
   const [birthDate, setBirthDate] = useState('');
 
   const handlePersonalNext = () => {
-    try {
-      personalSchema.parse({
-        name,
-        birthDate,
-        email,
-        phone,
-        rg,
-        cpf,
-      });
+    const isValid = validate();
 
-      changeTab('address');
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        for (const issue of err.issues) {
-          toast.error(issue.message);
-        }
-      }
+    if (!isValid) {
+      return;
     }
+
+    changeTab('address');
   };
 
   const getPersonalData = () => ({
@@ -81,6 +71,29 @@ const PersonalComponent: ForwardRefRenderFunction<PersonalHandles, PersonalProps
     phone,
     birthDate,
   });
+
+  const validate = () => {
+    try {
+      personalSchema.parse({
+        name,
+        birthDate,
+        email,
+        phone,
+        rg,
+        cpf,
+      });
+
+      return true;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        for (const issue of err.issues) {
+          toast.error(issue.message);
+        }
+      }
+
+      return false;
+    }
+  };
 
   const clear = () => {
     setRg('');
@@ -93,6 +106,7 @@ const PersonalComponent: ForwardRefRenderFunction<PersonalHandles, PersonalProps
 
   useImperativeHandle(ref, () => ({
     getPersonalData,
+    validate,
     clear,
   }));
 
