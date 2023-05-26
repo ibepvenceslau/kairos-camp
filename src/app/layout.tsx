@@ -8,6 +8,13 @@ const poppins = Poppins({
   weight: ['400', '600', '800', '900'],
 });
 
+export const metadata = {
+  title: {
+    default: 'Kairós Camp',
+    template: '%s | Kairós Camp',
+  },
+};
+
 type RootLayoutProps = {
   children: ReactNode;
 };

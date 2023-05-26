@@ -42,6 +42,7 @@ export const InputGroup = ({ text, tooltip, children }: InputGroupProps) => {
         )}
         <span className="bg-gray-800 w-full h-[1px]" />
       </div>
+      {/* <div className="flex flex-col gap-1">{children}</div> */}
       {children}
     </>
   );
