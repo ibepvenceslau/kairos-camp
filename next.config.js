@@ -1,15 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverActions: true,
-  },
-  rewrites() {
-    return [
-      {
-        source: '/inscricoes',
-        destination: '/registrations',
-      },
-    ];
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: '/inscricoes',
+          destination: '/registrations',
+        },
+      ],
+    };
   },
 };
 
