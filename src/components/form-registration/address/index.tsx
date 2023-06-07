@@ -1,6 +1,13 @@
 import { z } from 'zod';
 import { toast } from 'react-toastify';
-import { ForwardRefRenderFunction, forwardRef, useImperativeHandle, useState } from 'react';
+import { faker } from '@faker-js/faker';
+import {
+  ForwardRefRenderFunction,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from 'react';
 
 import { Input } from '@/components/input';
 import { Button } from '@/components/button';
@@ -48,6 +55,23 @@ const AddressComponent: ForwardRefRenderFunction<AddressHandles, AddressProps> =
   const [streetName, setStreetName] = useState('');
   const [streetNumber, setStreetNumber] = useState('');
   const [neighborhood, setNeighborhood] = useState('');
+
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development') {
+      return;
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.shiftKey && event.ctrlKey && event.altKey && event.code === 'KeyW') {
+        setCity(faker.location.city());
+        setState(faker.location.state().substring(0, 2).toUpperCase());
+        setComplement(faker.word.words(faker.number.int({ min: 0, max: 8 })));
+        setStreetName(faker.location.street());
+        setStreetNumber(faker.location.buildingNumber());
+        setNeighborhood(faker.location.secondaryAddress());
+      }
+    });
+  }, []);
 
   const handleAddressPrev = () => {
     changeTab('personal');

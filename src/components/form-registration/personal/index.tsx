@@ -1,7 +1,14 @@
 import { z } from 'zod';
 import masker from 'vanilla-masker';
 import { toast } from 'react-toastify';
-import { ForwardRefRenderFunction, forwardRef, useImperativeHandle, useState } from 'react';
+import { faker } from '@faker-js/faker';
+import {
+  ForwardRefRenderFunction,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from 'react';
 
 import { Input } from '@/components/input';
 import { Button } from '@/components/button';
@@ -52,6 +59,23 @@ const PersonalComponent: ForwardRefRenderFunction<PersonalHandles, PersonalProps
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [birthDate, setBirthDate] = useState('');
+
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development') {
+      return;
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.shiftKey && event.ctrlKey && event.altKey && event.code === 'KeyW') {
+        setRg(faker.phone.number('##.###.###-#'));
+        setCpf(faker.phone.number('###.###.###-##'));
+        setName(faker.person.fullName());
+        setEmail(faker.internet.email());
+        setPhone(faker.phone.number('(##) #####-####'));
+        setBirthDate(faker.date.birthdate({ min: 1990, max: 2020 }).toISOString().substring(0, 10));
+      }
+    });
+  }, []);
 
   const handlePersonalNext = () => {
     const isValid = validate();

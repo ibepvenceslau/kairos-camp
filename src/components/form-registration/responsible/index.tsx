@@ -1,12 +1,22 @@
-import { z } from 'zod';
+import { set, z } from 'zod';
 import masker from 'vanilla-masker';
 import { toast } from 'react-toastify';
-import { ForwardRefRenderFunction, forwardRef, useImperativeHandle, useState } from 'react';
+import {
+  ForwardRefRenderFunction,
+  RefObject,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useState,
+} from 'react';
 
 import { Input } from '@/components/input';
 import { Button } from '@/components/button';
 import { InputBlock } from '@/components/input-block';
 import { InputGroup } from '@/components/input-group';
+import { calcPersonAge } from '../common';
+import { PersonalHandles } from '../personal';
+import { faker } from '@faker-js/faker';
 
 const responsibleSchema = z.object({
   responsibleName: z.string().nonempty({ message: 'Nome do responsável é obrigatório' }),
@@ -40,11 +50,12 @@ export type ResponsibleHandles = {
 };
 
 type ResponsibleProps = {
+  personalRef: RefObject<PersonalHandles>;
   changeTab(tab: string): void;
 };
 
 const ResponsibleComponent: ForwardRefRenderFunction<ResponsibleHandles, ResponsibleProps> = (
-  { changeTab },
+  { personalRef, changeTab },
   ref,
 ) => {
   const [responsibleRg, setResponsibleRg] = useState('');
@@ -54,6 +65,41 @@ const ResponsibleComponent: ForwardRefRenderFunction<ResponsibleHandles, Respons
   const [responsibleEmail, setResponsibleEmail] = useState('');
   const [responsiblePhone, setResponsiblePhone] = useState('');
   const [responsibleBirthDate, setResponsibleBirthDate] = useState('');
+
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development') {
+      return;
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.shiftKey && event.ctrlKey && event.altKey && event.code === 'KeyW') {
+        const personAge = calcPersonAge(personalRef.current?.getPersonalData().birthDate ?? '');
+
+        if (personAge >= 18) {
+          setResponsibleRg('');
+          setResponsibleCpf('');
+          setResponsibleName('');
+          setDegreeOfKinship('');
+          setResponsibleEmail('');
+          setResponsiblePhone('');
+          setResponsibleBirthDate('');
+        } else {
+          const birthDate = faker.date
+            .birthdate({ min: 1960, max: 2011 })
+            .toISOString()
+            .substring(0, 10);
+
+          setResponsibleRg(faker.phone.number('##.###.###-#'));
+          setResponsibleCpf(faker.phone.number('###.###.###-##'));
+          setResponsibleName(faker.person.fullName());
+          setDegreeOfKinship(faker.helpers.arrayElement(['Pai', 'Mãe', 'Tia', 'Avô', 'Avó']));
+          setResponsibleEmail(faker.internet.email());
+          setResponsiblePhone(faker.phone.number('(##) #####-####'));
+          setResponsibleBirthDate(birthDate);
+        }
+      }
+    });
+  }, []);
 
   const handleResponsiblePrev = () => {
     changeTab('church');
@@ -81,6 +127,12 @@ const ResponsibleComponent: ForwardRefRenderFunction<ResponsibleHandles, Respons
 
   const validate = () => {
     try {
+      const personAge = calcPersonAge(personalRef.current?.getPersonalData().birthDate ?? '');
+
+      if (personAge >= 18) {
+        return true;
+      }
+
       responsibleSchema.parse({
         responsibleName,
         responsibleBirthDate,

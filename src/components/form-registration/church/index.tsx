@@ -1,9 +1,11 @@
 import { z } from 'zod';
 import { toast } from 'react-toastify';
+import { faker } from '@faker-js/faker';
 import {
   ForwardRefRenderFunction,
   RefObject,
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useState,
 } from 'react';
@@ -54,6 +56,28 @@ const ChurchComponent: ForwardRefRenderFunction<ChurchHandles, ChurchProps> = (
   const [churchName, setChurchName] = useState('');
   const [isChurchMember, setIsChurchMember] = useState(true);
   const [churchLeaderName, setChurchLeaderName] = useState('');
+
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development') {
+      return;
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.shiftKey && event.ctrlKey && event.altKey && event.code === 'KeyW') {
+        const isChurchMember = faker.datatype.boolean();
+
+        setIsChurchMember(isChurchMember);
+
+        if (isChurchMember) {
+          setChurchName(faker.company.name());
+          setChurchLeaderName(faker.person.fullName());
+        } else {
+          setChurchName('');
+          setChurchLeaderName('');
+        }
+      }
+    });
+  }, []);
 
   const handleChurchPrev = () => {
     changeTab('address');

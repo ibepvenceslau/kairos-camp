@@ -41,7 +41,7 @@ export const FormRegistration = () => {
     };
 
     try {
-      const response = await fetch('/api/registrations', {
+      const registrationsRequest = await fetch('/api/registrations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,16 +49,31 @@ export const FormRegistration = () => {
         body: JSON.stringify(data),
       });
 
-      if (response.status === 200) {
-        toast.success('Inscrição realizada com sucesso!');
-
-        churchRef.current?.clear();
-        addressRef.current?.clear();
-        personalRef.current?.clear();
-        responsibleRef.current?.clear();
-
-        setTab('personal');
+      if (registrationsRequest.status !== 200) {
+        throw new Error();
       }
+
+      churchRef.current?.clear();
+      addressRef.current?.clear();
+      personalRef.current?.clear();
+      responsibleRef.current?.clear();
+
+      const { id, email } = await registrationsRequest.json();
+
+      const checkoutRequest = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id,
+          email,
+        }),
+      });
+
+      const { url } = await checkoutRequest.json();
+
+      window.location.href = url;
     } catch {
       toast.error('Erro ao realizar inscrição, entre em contato com a equipe!');
     }
@@ -111,6 +126,7 @@ export const FormRegistration = () => {
             forceMount
           >
             <Responsible
+              personalRef={personalRef}
               changeTab={(tab) => setTab(tab)}
               ref={responsibleRef}
             />
