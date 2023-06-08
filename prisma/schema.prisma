@@ -19,6 +19,7 @@ model Registration {
   phone                String
   rg                   String
   cpf                  String
+  betterAt             String    @map("better_at")
   streetName           String    @map("street_name")
   streetNumber         String    @map("street_number")
   neighborhood         String

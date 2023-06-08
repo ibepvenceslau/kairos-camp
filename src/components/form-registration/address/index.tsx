@@ -6,6 +6,7 @@ import {
   forwardRef,
   useEffect,
   useImperativeHandle,
+  useRef,
   useState,
 } from 'react';
 
@@ -13,6 +14,15 @@ import { Input } from '@/components/input';
 import { Button } from '@/components/button';
 import { InputBlock } from '@/components/input-block';
 import { InputGroup } from '@/components/input-group';
+import { Dropdown, DropdownHandles } from '@/components/dropdown';
+
+type StateDTO = {
+  sigla: string;
+};
+
+type CityDTO = {
+  nome: string;
+};
 
 const addressSchema = z.object({
   streetName: z.string().nonempty({ message: 'Rua é obrigatório' }),
@@ -49,22 +59,34 @@ const AddressComponent: ForwardRefRenderFunction<AddressHandles, AddressProps> =
   { changeTab },
   ref,
 ) => {
-  const [city, setCity] = useState('');
-  const [state, setState] = useState('');
   const [complement, setComplement] = useState('');
   const [streetName, setStreetName] = useState('');
   const [streetNumber, setStreetNumber] = useState('');
   const [neighborhood, setNeighborhood] = useState('');
+
+  const cityRef = useRef<DropdownHandles>(null);
+  const stateRef = useRef<DropdownHandles>(null);
+
+  const [states, setStates] = useState<StateDTO[]>([]);
+  const [cities, setCities] = useState<CityDTO[]>([]);
 
   useEffect(() => {
     if (process.env.NODE_ENV !== 'development') {
       return;
     }
 
-    document.addEventListener('keydown', (event) => {
+    document.addEventListener('keydown', async (event) => {
       if (event.shiftKey && event.ctrlKey && event.altKey && event.code === 'KeyW') {
-        setCity(faker.location.city());
-        setState(faker.location.state().substring(0, 2).toUpperCase());
+        const states = await loadStates();
+        const state = faker.helpers.arrayElement(states.map((state) => state.sigla));
+
+        stateRef.current?.updateSelectedOption(state);
+
+        const cities = await loadCities(state);
+        const city = faker.helpers.arrayElement(cities.map((city) => city.nome));
+
+        cityRef.current?.updateSelectedOption(city);
+
         setComplement(faker.word.words(faker.number.int({ min: 0, max: 8 })));
         setStreetName(faker.location.street());
         setStreetNumber(faker.location.buildingNumber());
@@ -72,6 +94,33 @@ const AddressComponent: ForwardRefRenderFunction<AddressHandles, AddressProps> =
       }
     });
   }, []);
+
+  useEffect(() => {
+    loadStates();
+  }, []);
+
+  const loadStates = async (): Promise<StateDTO[]> => {
+    const response = await fetch('http://servicodados.ibge.gov.br/api/v1/localidades/estados');
+
+    const states = await response.json();
+
+    setStates(states);
+
+    return states;
+  };
+
+  const loadCities = async (state: string): Promise<CityDTO[]> => {
+    const response = await fetch(
+      `http://servicodados.ibge.gov.br/api/v1/localidades/estados/${state}/municipios`,
+    );
+
+    const cities = await response.json();
+
+    setCities(cities);
+    cityRef.current?.clear();
+
+    return cities;
+  };
 
   const handleAddressPrev = () => {
     changeTab('personal');
@@ -92,8 +141,8 @@ const AddressComponent: ForwardRefRenderFunction<AddressHandles, AddressProps> =
     streetNumber,
     neighborhood,
     complement,
-    city,
-    state,
+    city: cityRef.current?.getSelectedOption() ?? '',
+    state: stateRef.current?.getSelectedOption() ?? '',
   });
 
   const validate = () => {
@@ -103,8 +152,8 @@ const AddressComponent: ForwardRefRenderFunction<AddressHandles, AddressProps> =
         streetNumber,
         neighborhood,
         complement,
-        city,
-        state,
+        city: cityRef.current?.getSelectedOption(),
+        state: stateRef.current?.getSelectedOption(),
       });
 
       return true;
@@ -120,12 +169,12 @@ const AddressComponent: ForwardRefRenderFunction<AddressHandles, AddressProps> =
   };
 
   const clear = () => {
-    setCity('');
-    setState('');
     setComplement('');
     setStreetName('');
     setStreetNumber('');
     setNeighborhood('');
+    cityRef.current?.clear();
+    stateRef.current?.clear();
   };
 
   useImperativeHandle(ref, () => ({
@@ -174,21 +223,18 @@ const AddressComponent: ForwardRefRenderFunction<AddressHandles, AddressProps> =
         />
 
         <InputBlock>
-          <Input
-            id="city"
-            text="Cidade"
-            type="text"
-            className="md:w-1/2"
-            value={city}
-            onChange={(event) => setCity(event.target.value)}
-          />
-          <Input
-            id="state"
+          <Dropdown
             text="Estado"
-            type="text"
-            className="md:w-1/2"
-            value={state}
-            onChange={(event) => setState(event.target.value)}
+            placeholder="Selecione um estado"
+            options={states.map((state) => state.sigla).sort()}
+            onChange={(value) => loadCities(value)}
+            ref={stateRef}
+          />
+          <Dropdown
+            text="Cidade"
+            placeholder="Selecione uma cidade"
+            options={cities.map((city) => city.nome).sort()}
+            ref={cityRef}
           />
         </InputBlock>
       </InputGroup>

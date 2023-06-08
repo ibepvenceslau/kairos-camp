@@ -21,11 +21,8 @@ type RootLayoutProps = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html
-      lang="en"
-      className={poppins.className}
-    >
-      <body className="bg-gray-900 text-zinc-50 w-screen min-h-screen">
+    <html lang="en">
+      <body className={`${poppins.className} bg-gray-900 text-zinc-50 w-screen min-h-screen`}>
         <div className="absolute left-0 top-0 bg-[url(https://grainy-gradients.vercel.app/noise.svg)] opacity-10 w-full h-full -z-10"></div>
         {children}
       </body>

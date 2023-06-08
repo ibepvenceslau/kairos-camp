@@ -85,7 +85,7 @@ const ResponsibleComponent: ForwardRefRenderFunction<ResponsibleHandles, Respons
           setResponsibleBirthDate('');
         } else {
           const birthDate = faker.date
-            .birthdate({ min: 1960, max: 2011 })
+            .birthdate({ min: 1960, max: 2000 })
             .toISOString()
             .substring(0, 10);
 
@@ -247,6 +247,21 @@ const ResponsibleComponent: ForwardRefRenderFunction<ResponsibleHandles, Respons
           onChange={(event) => setDegreeOfKinship(event.target.value)}
         />
       </InputGroup>
+
+      <div className="mt-2">
+        <p className="text-md">
+          Você precisará fazer o download do arquivo (clicando no LINK abaixo), preenchê-lo e
+          levá-lo no dia do evento.
+        </p>
+        <a
+          target="_blank"
+          href="docs/AUTORIZACAO_KAIROS.docx"
+          className="font-bold text-rose-700 underline hover:text-rose-600 transition-colors"
+        >
+          BAIXAR AUTORIZAÇÃO
+        </a>
+      </div>
+
       <div className="md:grid md:grid-cols-3 md:gap-2">
         <Button
           text="Voltar"

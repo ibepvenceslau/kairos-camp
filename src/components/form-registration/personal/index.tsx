@@ -14,6 +14,8 @@ import { Input } from '@/components/input';
 import { Button } from '@/components/button';
 import { InputBlock } from '@/components/input-block';
 import { InputGroup } from '@/components/input-group';
+import { RadioBlock } from '@/components/radio-block';
+import { Radio } from '@/components/radio';
 
 const personalSchema = z.object({
   name: z
@@ -37,6 +39,7 @@ type PersonalData = {
   phone: string;
   rg: string;
   cpf: string;
+  betterAt: string;
 };
 
 export type PersonalHandles = {
@@ -59,6 +62,7 @@ const PersonalComponent: ForwardRefRenderFunction<PersonalHandles, PersonalProps
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [birthDate, setBirthDate] = useState('');
+  const [betterAt, setBetterAt] = useState('theory');
 
   useEffect(() => {
     if (process.env.NODE_ENV !== 'development') {
@@ -73,6 +77,7 @@ const PersonalComponent: ForwardRefRenderFunction<PersonalHandles, PersonalProps
         setEmail(faker.internet.email());
         setPhone(faker.phone.number('(##) #####-####'));
         setBirthDate(faker.date.birthdate({ min: 1990, max: 2020 }).toISOString().substring(0, 10));
+        setBetterAt(faker.helpers.arrayElement(['theory', 'practice']));
       }
     });
   }, []);
@@ -94,6 +99,7 @@ const PersonalComponent: ForwardRefRenderFunction<PersonalHandles, PersonalProps
     email,
     phone,
     birthDate,
+    betterAt,
   });
 
   const validate = () => {
@@ -192,6 +198,28 @@ const PersonalComponent: ForwardRefRenderFunction<PersonalHandles, PersonalProps
             onChange={(event) => setCpf(masker.toPattern(event.target.value, '999.999.999-99'))}
           />
         </InputBlock>
+
+        <RadioBlock
+          text="Em qual dessas áreas você se considera melhor nas gincanas/desafios?"
+          className="mt-2"
+        >
+          <Radio
+            id="betterTheory"
+            name="betterTheory"
+            text="Parte bíblica (P/R, torta na cara, etc)"
+            value="theory"
+            checked={betterAt === 'theory'}
+            onChange={(event) => setBetterAt(event.target.value)}
+          />
+          <Radio
+            id="betterPractice"
+            name="betterPractice"
+            text="Parte prática (corrida, salto, etc)"
+            value="practice"
+            checked={betterAt === 'practice'}
+            onChange={(event) => setBetterAt(event.target.value)}
+          />
+        </RadioBlock>
       </InputGroup>
       <Button
         text="Próximo"

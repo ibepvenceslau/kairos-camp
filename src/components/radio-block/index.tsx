@@ -5,12 +5,12 @@ type RadioBlockProps = HTMLAttributes<HTMLDivElement> & {
   children?: ReactNode;
 };
 
-export const RadioBlock = ({ text, children, ...rest }: RadioBlockProps) => {
+export const RadioBlock = ({ text, children, className, ...rest }: RadioBlockProps) => {
   return (
-    <div className="flex flex-col gap-2">
+    <div className={`flex flex-col gap-2 ${className}`}>
       <h3 className="text-sm">{text}</h3>
       <div
-        className="flex gap-4"
+        className={`flex flex-col gap-2 md:flex-row md:gap-4`}
         {...rest}
       >
         {children}

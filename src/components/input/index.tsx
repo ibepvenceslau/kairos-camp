@@ -19,7 +19,18 @@ const InputComponent: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
       <input
         id={id}
         name={id}
-        className="text-sm text-zinc-200 bg-gray-900 border-0 outline-none rounded-md w-full h-10 focus:ring-2 focus:ring-rose-600"
+        className="
+          text-sm
+          text-zinc-200
+          bg-gray-900
+          border-0
+          outline-none
+          rounded-md
+          w-full
+          h-10
+          focus:ring-2
+          focus:ring-rose-600
+        "
         ref={ref}
         {...rest}
       />

@@ -5,5 +5,5 @@ type InputBlockProps = {
 };
 
 export const InputBlock = ({ children }: InputBlockProps) => {
-  return <div className="flex flex-col gap-4 md:flex-row md:gap-2">{children}</div>;
+  return <div className="flex flex-col md:flex-row md:gap-2">{children}</div>;
 };

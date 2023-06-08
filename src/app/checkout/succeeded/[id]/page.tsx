@@ -44,12 +44,12 @@ const CheckoutSucceededPage = async ({ params }: CheckoutSucceededPageProps) => 
         </h2>
 
         <p className="text-sm text-gray-400 mt-2">
-          Você precisará apresentar o comprovante de pagamento no dia do evento, junto de um
+          Você precisará apresentar o comprovante de inscrição no dia do evento, junto de um
           documento com foto, então não esqueça de tirar{' '}
           <span className="text-rose-600 font-bold">PRINT</span> dessa tela.
         </p>
 
-        {registration.isPaid && <PaymentReceipt registration={registration} />}
+        <PaymentReceipt registration={registration} />
       </div>
     </div>
   );
