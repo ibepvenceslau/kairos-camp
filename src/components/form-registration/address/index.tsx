@@ -100,7 +100,7 @@ const AddressComponent: ForwardRefRenderFunction<AddressHandles, AddressProps> =
   }, []);
 
   const loadStates = async (): Promise<StateDTO[]> => {
-    const response = await fetch('http://servicodados.ibge.gov.br/api/v1/localidades/estados');
+    const response = await fetch(`${process.env.NEXT_PUBLIC_IBGE_API_URL}/estados`);
 
     const states = await response.json();
 
@@ -111,7 +111,7 @@ const AddressComponent: ForwardRefRenderFunction<AddressHandles, AddressProps> =
 
   const loadCities = async (state: string): Promise<CityDTO[]> => {
     const response = await fetch(
-      `http://servicodados.ibge.gov.br/api/v1/localidades/estados/${state}/municipios`,
+      `${process.env.NEXT_PUBLIC_IBGE_API_URL}/estados/${state}/municipios`,
     );
 
     const cities = await response.json();
