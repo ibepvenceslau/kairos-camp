@@ -15,7 +15,7 @@ type CheckoutSucceededPageProps = {
 };
 
 const CheckoutSucceededPage = async ({ params }: CheckoutSucceededPageProps) => {
-  const request = await fetch(`http://localhost:3000/api/registrations/${params.id}`);
+  const request = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/registrations/${params.id}`);
 
   const registration: Registration = await request.json();
 
