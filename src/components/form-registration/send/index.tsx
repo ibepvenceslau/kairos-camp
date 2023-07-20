@@ -46,9 +46,9 @@ export const Send = ({ personalRef, addressRef, changeTab }: SendProps) => {
             <h3>2ª Opção (Pagamento via PIX)</h3>
             <p className="text-sm text-zinc-400">
               Para o pagamento via PIX, basta realizar a transferência para a chave
-              <span className="font-bold text-rose-600"> 07.385.556/0001-92</span> e enviar o
-              comprovante para o número{' '}
-              <span className="font-bold text-rose-600">(18) 99822-7103</span> (WhatsApp),
+              <span className="font-bold text-rose-600"> analaura_guilmo@icloud.com</span> e enviar
+              o comprovante para o número{' '}
+              <span className="font-bold text-rose-600">(18) 99613-8580</span> (WhatsApp),
               juntamente com seu número de documento (RG ou CPF).
             </p>
             <p className="text-sm text-zinc-400">
